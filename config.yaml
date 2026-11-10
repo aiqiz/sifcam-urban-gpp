@@ -1,0 +1,145 @@
+# All paths and settings live here. Copy this file to config.local.yaml, put
+# your own paths in, and run the scripts in the order given in README.md.
+# Every script reads config.local.yaml if it exists, else this file.
+# Paths: absolute ones are used as they are; relative ones are inside
+# data_dir, except data/... which are the small files shipped with the repo.
+
+data_dir:    /path/to/data                        # raw inputs: relative paths below are inside this folder
+results_dir: /path/to/results                     # everything the scripts write
+
+# ---------------------------------------------------------------------------
+# SIF line: Sentinel-2 NIRv -> 10 m SIF -> 10 m GPP (SMUrF)
+# ---------------------------------------------------------------------------
+sif:
+  region: toronto            # which entry under `regions` to process
+  years: [2021, 2022, 2023, 2024, 2025]
+  n_procs: 8
+  force_rerun: false         # true = redo steps even if outputs exist
+
+  regions:
+    toronto:
+      # Sentinel-2 tiles (lon_min, lat_min, lon_max, lat_max), each <= 2500 x 2500 px at 10 m
+      s2_tiles:
+        center:   [-79.56, 43.59,  -79.26,  43.81]
+        new_west: [-79.64, 43.58,  -79.34,  43.80]
+        new_east: [-79.42, 43.635, -79.115, 43.855]
+      smurf_bbox: [-79.6399, 43.5800, -79.1149, 43.8550]
+      smurf_slope_file: GPP-CSIF_Slopes_All_Converted_ESA_downtown.txt
+      smurf_c4_tag: Toronto
+      smurf_urban_veg_file: toronto_urban_veg_fractions_10m.tif   # in <smurf_dir>/data; leave empty if none
+      smurf_landcover_file: glc_fcs30d/GLC_FCS30D_20002022_W80N45_Annual.tif
+    turkey_point:
+      years: [2018, 2019, 2020, 2021, 2022, 2023, 2024]   # flux tower years
+      # The Turkey Point run in the paper started from archived NIRv mosaics
+      # (steps 0-1), there was no tile download. This tile is the SMUrF bbox,
+      # use it to download from scratch.
+      s2_tiles:
+        turkey_point: [-80.60, 42.55, -80.30, 42.75]
+      smurf_bbox: [-80.60, 42.55, -80.30, 42.75]
+      smurf_slope_file: GPP-CSIF_Slopes_All_Converted_ESA_turkeypoint.txt
+      smurf_c4_tag: TurkeyPoint
+      smurf_urban_veg_file:
+      smurf_landcover_file: glc_fcs30d/GLC_FCS30D_20002022_W85N45_Annual.tif
+
+  # Sentinel-2 downloads go here (one folder per tile). Point this at an
+  # existing download to skip re-downloading. Credentials are read from the
+  # environment variables SH_CLIENT_ID and SH_CLIENT_SECRET
+  # (Copernicus Data Space Ecosystem account).
+  s2_dir: sentinel2_nirv
+
+  esa_sif_dir:    tropomi_sif          # <year>/ TROPOMI L2B SIF granules (ESA)
+  gosif_dir:      gosif                # <year>/ GOSIF 8-day tifs
+  worldcover_tile: worldcover/ESA_WorldCover_10m_2021_v200_N42W081_Map.tif   # the tile covering the region
+
+smurf:
+  smurf_dir: /path/to/SMUrF            # local clone of the SMUrF 10m branch
+  agb_dir: globbiomass_agb/N80W100_agb   # GlobBiomass 100 m above-ground biomass tile
+  tmp_dir: /tmp/smurf_raster
+
+# ---------------------------------------------------------------------------
+# Camera line: images -> daily GCC -> GPP (DPPM)
+# ---------------------------------------------------------------------------
+camera:
+  years: [2023, 2024, 2025]
+  lat: 43.6532                # used for the solar zenith angle
+  lon: -79.3832
+
+  # traffic cameras: <traffic_image_dir>/<year>/<YYYYMMDD>/locXXXX.YYYYMMDD_HHMMSS.jpg
+  traffic_image_dir: traffic_camera
+  traffic_locations: []       # empty = all cameras; or e.g. [loc9100] for a quick test
+  traffic_qc:
+    time_min: 11              # local hour, inclusive
+    time_max: 16
+    sza_max: 85
+    edge_density_min: 0.05
+  n_workers: 6
+  device: auto              # auto picks the Mac GPU (mps) when available; or cpu / mps / cuda
+
+  # phenocams: one entry per camera. ref_image is the frame the others are
+  # aligned to, roi_json the vegetation polygons drawn on it with labelme (both
+  # in data/phenocam). edge_density_min, ransac_px and ratio are the per-camera
+  # image alignment settings (the views differ a lot).
+  phenocam_lat: 43.663889
+  phenocam_lon: -79.395656
+  phenocams:
+    UT1:
+      image_dir: phenocam/UT1
+      ref_image: data/phenocam/UT1_reference.jpg
+      roi_json:  data/phenocam/UT1_roi.json
+      edge_density_min: 0.01
+      ransac_px: 10
+      ratio: 0.7
+    UT2:
+      image_dir: phenocam/UT2
+      ref_image: data/phenocam/UT2_reference.jpg
+      roi_json:  data/phenocam/UT2_roi.json
+      edge_density_min: 0.005
+      ransac_px: 5
+      ratio: 0.6
+    UT3:
+      image_dir: phenocam/UT3
+      ref_image: data/phenocam/UT3_reference.jpg
+      roi_json:  data/phenocam/UT3_roi.json
+      edge_density_min: 0.005
+      ransac_px: 15
+      ratio: 0.7
+    UT4:
+      image_dir: phenocam/UT4
+      ref_image: data/phenocam/UT4_reference.jpg
+      roi_json:  data/phenocam/UT4_roi.json
+      edge_density_min: 0.004
+      ransac_px: 8
+      ratio: 0.75
+  phenocam_qc:
+    time_min: 11
+    time_max: 16
+    sza_max: 80
+    inlier_ratio_min: 0.6     # use the closest earlier alignment with at least this
+    align_every_n: 200        # align every n-th image, the rest reuse the nearest one
+    ignore_top_bottom: 8      # ignore top and bottom 1/8 of the frame when matching (sky, timestamp)
+
+  # DPPM inputs
+  met_csv: data/timeseries_temp_par.csv          # daily T per station + PAR
+  station_mapping_csv: data/camera_station_mapping.csv
+  phenocam_station: TORONTO CITY CENTRE
+  dppm_dir: /path/to/DPPM              # folder with FN_computeGEPgatekeeperGCCgn2br.m (ask the DPPM authors)
+  dppm_params: dppm_parameters.csv   # DPPM Table 1 (Restrepo-Coupe et al.): Deciduous, Conifer -> Evergreen, US-INa turfgrass -> Grasses
+  n_mc: 500
+
+# ---------------------------------------------------------------------------
+# Comparison
+# ---------------------------------------------------------------------------
+comparison:
+  landcover_gdb: toronto_landcover_2018/LandCover2018.gdb   # City of Toronto 2018 land cover (open data)
+  traffic_sites_csv: data/camera_station_mapping.csv   # location, lat, lon
+  traffic_radius_m: 100
+  frac_deciduous: 0.9         # tree GPP = 0.9 deciduous + 0.1 evergreen
+  # phenocams look out from one tower in four directions (wedges)
+  tower_lat: 43.66088464206098
+  tower_lon: -79.39846078253939
+  wedge_radius_m: 800
+  wedges:                     # camera: [azimuth from north, half angle], degrees
+    UT1: [45, 45]
+    UT2: [135, 45]
+    UT3: [225, 45]
+    UT4: [315, 45]

@@ -1,0 +1,40 @@
+name: urban-gpp
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - pyyaml
+  - matplotlib
+  - xarray
+  - netcdf4
+  - rasterio
+  - geopandas
+  - shapely
+  - pyproj
+  - scikit-image
+  - opencv
+  - pillow
+  - pvlib-python
+  - pytorch
+  - transformers
+  - sentinelhub
+  # R side (sif/8_smurf_gpp.R): what SMUrF loads in r/dependencies.r
+  - r-base
+  - r-yaml
+  - r-raster
+  - r-ncdf4
+  - r-dplyr
+  - r-ggplot2
+  - r-ggmap
+  - r-ggpubr
+  - r-reshape2
+  - r-stringr
+  - r-rastervis
+  - r-lutz
+  - r-rslurm
+  - r-lubridate
+  - r-gridextra
+  - r-rworldmap
