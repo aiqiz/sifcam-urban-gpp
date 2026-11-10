@@ -7,7 +7,7 @@ Code for estimating urban gross primary productivity (GPP) in two independent wa
 
 The method is described in the paper: Zhang et al. (in preparation), citation to be added. Data for the Toronto case are on Zenodo: DOI to be added.
 
-AI assistance. Portions of this code were developed with the assistance of Claude (Anthropic). All code was reviewed, tested, and validated by the authors, who take full responsibility for its correctness.
+AI assistance: Portions of this code were developed with the assistance of Claude (Anthropic). All code was reviewed, tested, and validated by the authors, who take full responsibility for its correctness.
 
 
 ## Setup
