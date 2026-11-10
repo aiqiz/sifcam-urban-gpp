@@ -78,3 +78,5 @@ output folder), not from a fresh Sentinel-2 download.
 `data/` holds the small inputs that are not downloaded: the camera to
 weather station mapping, daily temperature and PAR, and the phenocam
 reference frames with their labelme vegetation polygons.
+
+AI assistance. Portions of this code were developed with the assistance of Claude (Anthropic). All code was reviewed, tested, and validated by the authors, who take full responsibility for its correctness.
