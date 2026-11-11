@@ -3,7 +3,7 @@
 Code for estimating urban gross primary productivity (GPP) in two independent ways and comparing them:
 
 - **SIF**: satellite solar-induced fluorescence (TROPOMI, GOSIF) downscaled to 10 m with Sentinel-2 NIRv, then converted to GPP with SMUrF.
-- **Cameras**: greenness (GCC) from traffic cameras and phenocams, converted to GPP with the DPPM gatekeeper model.
+- **Cameras**: greenness (GCC) extracted from traffic cameras and phenocams, converted to GPP with the DPPM gatekeeper model.
 
 The method is described in the paper: Zhang et al. (in preparation), citation to be added. Data for the Toronto case are on Zenodo: DOI to be added.
 
@@ -20,7 +20,7 @@ conda activate urban-gpp
 Then copy `config.yaml` to `config.local.yaml` and put your paths in it (`data_dir`, `results_dir`, the SMUrF and DPPM folders, and the raw data folders under `data_dir`). Every script reads `config.local.yaml` if it exists, otherwise `config.yaml`; the local copy is ignored by git.
 
 Two outside pieces are needed:
-- **SMUrF, 10m branch**: https://github.com/aiqiz/SMUrF/tree/10m. Clone it, then set `smurf.smurf_dir`. The R packages it needs are in `environment.yml`.
+- **SMUrF, 10m branch**: link to be added, Clone it, then set `smurf.smurf_dir`. The R packages it needs are in `environment.yml`.
 - **DPPM** (Restrepo-Coupe et al., "Phenology and the City"): the model code is not part of this repository; ask the authors for `FN_computeGEPgatekeeperGCCgn2br.m` and set `camera.dppm_dir` to its folder. The fitted parameters (Table 1 of that paper) are in `camera/dppm_parameters.csv`.
 
 Downloading Sentinel-2 needs a free Copernicus Data Space account. Put your client id and secret in the environment variables `SH_CLIENT_ID` and `SH_CLIENT_SECRET`.
