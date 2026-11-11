@@ -9,7 +9,7 @@ The method is described in the paper: Zhang et al. (in preparation), citation to
 
 AI assistance: Portions of this code were developed with the assistance of Claude (Anthropic). All code was reviewed, tested, and validated by the authors, who take full responsibility for its correctness.
 
-This work builds on the approaches developed in [Madsen-Colford et al. (2025)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2025JG008943) and [Turner et al. (2020)]([https://bg.copernicus.org/articles/17/405/2020/]).
+This work builds on the approaches developed in [Madsen-Colford et al. (2025)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2025JG008943) and [Turner et al. (2020)](https://bg.copernicus.org/articles/17/405/2020/).
 
 ## Setup
 
